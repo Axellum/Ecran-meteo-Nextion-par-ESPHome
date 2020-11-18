@@ -2,7 +2,7 @@ esphome:
   name: meteo_esp32
   platform: ESP32
   board: nodemcu-32s
-
+#
 wifi:
   ssid: "Axel"
   password: !secret wifi_password
@@ -29,18 +29,16 @@ time:
 
 globals:
 
- - id: display_on             # Is display on?
+ - id: display_on
    type: bool
- - id: glob_prise_01              # Global Plafonnier state
+ - id: glob_prise_01
    type: std::string
- - id: glob_sonoff_100090a609             # Global Plafonnier state
+ - id: glob_sonoff_100090a609
    type: std::string
- - id: glob_prise_02              # Global Plafonnier state
+ - id: glob_prise_02
    type: std::string
- - id: glob_prise_03              # Global Plafonnier state
+ - id: glob_prise_03
    type: std::string
-
-
 
 display:
   - platform: nextion
@@ -117,19 +115,16 @@ sensor:
     id: j3_tmin    
     entity_id: sensor.j3_tmin 
   - platform: homeassistant
-    id: temp_outside    
-    entity_id: sensor.sonde_blanche_temp
-#    accuracy_decimals: 0
+    id: temp_outside
 
-  - platform: homeassistant   # Outside temperature
+    entity_id: sensor.sonde_blanche_temp
+  - platform: homeassistant
     id: alerte_gel    
     entity_id:  sensor.alerte_gel
-
-  - platform: homeassistant   # Outside temperature
+  - platform: homeassistant
     id: alerte_neige    
     entity_id:  sensor.alerte_neige
-
-  - platform: homeassistant   # Outside temperature
+  - platform: homeassistant
     id: alerte_orage    
     entity_id:  sensor.alerte_orage
 
@@ -139,12 +134,11 @@ text_sensor:
     id: date_simple
     entity_id: sensor.date_simple
 
-  - platform: homeassistant   # Outside temperature
+  - platform: homeassistant
     id: humi    
     entity_id: sensor.sonde_blanche_humi
 
-
-  - platform: homeassistant   # Plafonnier state
+  - platform: homeassistant
     id: sonoff_100090a609_txt
     entity_id: light.sonoff_100090a609
     on_value:
@@ -161,7 +155,7 @@ text_sensor:
                           id(glob_sonoff_100090a609) = "0";
                           id(teplomer).send_command_no_ack("vent_sal.val=0");
 
-  - platform: homeassistant   # Plafonnier state
+  - platform: homeassistant
     id: sonoff_100090a609_2_txt
     entity_id: light.sonoff_100090a609
     on_value:
@@ -178,7 +172,7 @@ text_sensor:
                           id(glob_sonoff_100090a609) = "0";
                           id(teplomer).send_command_no_ack("vent_sal.val=0");
 
-  - platform: homeassistant   # Plafonnier state
+  - platform: homeassistant
     id: prise_01_txt
     entity_id: switch.prise_01
     on_value:
@@ -195,7 +189,7 @@ text_sensor:
                           id(glob_prise_01) = "0";
                           id(teplomer).send_command_no_ack("lum2_ch.val=0");
 
-  - platform: homeassistant   # Plafonnier state
+  - platform: homeassistant
     id: prise_02_txt
     entity_id: switch.prise_02
     on_value:
@@ -212,7 +206,7 @@ text_sensor:
                           id(glob_prise_02) = "0";
                           id(teplomer).send_command_no_ack("lum_ch.val=0");
 
-  - platform: homeassistant   # Plafonnier state
+  - platform: homeassistant
     id: prise_03_txt
     entity_id: switch.prise_03
     on_value:
@@ -299,21 +293,3 @@ binary_sensor:
             service: switch.turn_off
             data:
               entity_id: switch.prise_03
-
-# no work
-  - platform: nextion
-    page_id: 0
-    component_id: 29
-    id: vent_sal2
-    on_press:
-      then:
-        - homeassistant.service:
-            service: light.turn_on
-            data:
-              entity_id: light.sonoff_100090a609
-    on_release:
-      then:
-        - homeassistant.service:
-            service: light.turn_off
-            data:
-              entity_id: light.sonoff_100090a609
