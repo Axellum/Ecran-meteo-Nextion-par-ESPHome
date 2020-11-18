@@ -1,0 +1,387 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+sonoff:
+  username: !secret axel_mail
+  password: !secret sonoff_pass
+  mode: local
+  reload: always
+  default_class: light
+  devices:
+    1000c05a59:
+      device_class: light
+    100090a609:
+      device_class: light
+    1000bd93cd:
+      device_class: light
+
+# --------------- Partie sensor----------------------------------------------------------------
+sensor:
+
+ - platform: time_date
+   display_options:
+     - 'time'
+     - 'date'
+
+ - platform: template
+   sensors:
+    date_simple:
+      entity_id: sensor.date
+      friendly_name: "Date du jour"
+      icon_template: mdi:calendar-today
+      value_template: >
+        {% set months = ["Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Decembre"] %}
+        {% set days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]  %}
+        {{ days[now().weekday()] + ' ' + now().day | string + ' ' + months[now().month-1] }}
+
+#---------------------------Icone du jours meteo france -----------------
+ - platform: template
+   sensors:
+     today_icon:
+      value_template: >-
+          {% if is_state("weather.capbreton", 'clear-night') %}
+            10
+          {% elif is_state("weather.capbreton", 'cloudy') %}
+            4
+          {% elif is_state("weather.capbreton", 'fog') %}
+            8
+          {% elif is_state("weather.capbreton", 'hail') %}
+            13
+          {% elif is_state("weather.capbreton", 'lightning') %}
+            16
+          {% elif is_state("weather.capbreton", 'lightning-rainy') %}
+            9
+          {% elif is_state("weather.capbreton", 'Clear') %}
+            7
+          {% elif is_state("weather.capbreton", 'pouring') %}
+            12
+          {% elif is_state("weather.capbreton", 'partlycloudy') %}
+            5
+          {% elif is_state("weather.capbreton", 'rainy') %}
+            11
+          {% elif is_state("weather.capbreton", 'snowy') %}
+            14
+          {% elif is_state("weather.capbreton", 'windy') %}
+            17
+          {% elif is_state("weather.capbreton", 'snowy-rainy') %}
+            15
+          {% elif is_state("weather.capbreton", 'sunny') %}
+            7
+          {% else %}
+            2
+          {% endif %}
+      friendly_name: meteo france
+
+#---------------------------Icone journée meteo france -----------------
+ - platform: template
+   sensors:
+     jour:
+      value_template: >-
+          {% if state_attr("weather.capbreton","forecast")[0].condition == 'Clear' %}
+            22
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'sunny' %}
+            22
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'clear-night' %}
+            25
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'cloudy' %}
+            19
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'fog' %}
+            23
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'hail' %}
+            28
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'lightning' %}
+            31
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'lightning-rainy' %}
+            24
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'partlycloudy' %}
+            20
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'rainy' %}
+            28
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'pouring' %}
+            26
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'snowy' %}
+            29
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'snowy-rainy' %}
+            30
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'windy' %}
+            32
+          {% else %}
+            3
+          {% endif %}
+      friendly_name: Jour
+ - platform: template
+   sensors:
+      jour_tmin:
+        value_template: >-
+             {% set dem_tmin = state_attr("weather.capbreton","forecast")[0]. templow | float %}
+                {{ dem_tmin }}
+ - platform: template
+   sensors:
+      jour_tmax:
+        value_template: >-
+             {% set dem_tmax = state_attr("weather.capbreton","forecast")[0].temperature | float %}
+                {{ dem_tmax }}
+
+#---------------------------Icone de demain meteo france -----------------
+ - platform: template
+   sensors:
+     today_icon1:
+      value_template: >-
+          {% if state_attr("weather.capbreton","forecast")[1].condition == 'Clear' %}
+            22
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'sunny' %}
+            22
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'clear-night' %}
+            25
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'cloudy' %}
+            19
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'fog' %}
+            23
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'hail' %}
+            28
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'lightning' %}
+            31
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'lightning-rainy' %}
+            24
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'partlycloudy' %}
+            20
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'rainy' %}
+            28
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'pouring' %}
+            26
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'snowy' %}
+            29
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'snowy-rainy' %}
+            30
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'windy' %}
+            32
+          {% else %}
+            3
+          {% endif %}
+      friendly_name: temps 1 jours
+ - platform: template
+   sensors:
+      dem_tmin:
+        value_template: >-
+             {% set dem_tmin = state_attr("weather.capbreton","forecast")[1]. templow | float %}
+                {{ dem_tmin }}
+ - platform: template
+   sensors:
+      dem_tmax:
+        value_template: >-
+             {% set dem_tmax = state_attr("weather.capbreton","forecast")[1].temperature | float %}
+                {{ dem_tmax }}
+
+#---------------------------Icone du jour2 meteo france -----------------
+ - platform: template
+   sensors:
+     today_icon2:
+      value_template: >-
+          {% if state_attr("weather.capbreton","forecast")[2].condition == 'Clear' %}
+            22
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'sunny' %}
+            22
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'clear-night' %}
+            25
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'cloudy' %}
+            19
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'fog' %}
+            23
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'hail' %}
+            28
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'lightning' %}
+            31
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'lightning-rainy' %}
+            24
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'partlycloudy' %}
+            20
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'rainy' %}
+            28
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'pouring' %}
+            26
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'snowy' %}
+            29
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'snowy-rainy' %}
+            30
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'windy' %}
+            32
+          {% else %}
+            3
+          {% endif %}
+      friendly_name: temps 2 jours
+ - platform: template
+   sensors:
+      j2_tmin:
+        value_template: >-
+             {% set j2_tmin = state_attr("weather.capbreton","forecast")[2]. templow | float %}
+                {{ j2_tmin }}
+ - platform: template
+   sensors:
+      j2_tmax:
+        value_template: >-
+             {% set j2_tmax = state_attr("weather.capbreton","forecast")[2].temperature | float %}
+                {{ j2_tmax }}
+                
+#---------------------------Icone du jour3 meteo france -----------------
+ - platform: template
+   sensors:
+     today_icon3:
+      value_template: >-
+          {% if state_attr("weather.capbreton","forecast")[3].condition == 'Clear' %}
+            22
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'sunny' %}
+            22
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'clear-night' %}
+            25
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'cloudy' %}
+            19
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'fog' %}
+            23
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'hail' %}
+            28
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'lightning' %}
+            31
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'lightning-rainy' %}
+            24
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'partlycloudy' %}
+            20
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'rainy' %}
+            28
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'pouring' %}
+            26
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'snowy' %}
+            29
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'snowy-rainy' %}
+            30
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'windy' %}
+            32
+          {% else %}
+            3
+          {% endif %}
+      friendly_name: temps 3 jours
+ - platform: template
+   sensors:
+      j3_tmin:
+        value_template: >-
+             {% set j3_tmin = state_attr("weather.capbreton","forecast")[3]. templow | float %}
+                {{ j3_tmin }}
+ - platform: template
+   sensors:
+      j3_tmax:
+        value_template: >-
+             {% set j3_tmax = state_attr("weather.capbreton","forecast")[3].temperature | float %}
+                {{ j3_tmax }}
+
+# Alerte meteo
+
+ - platform: template
+   sensors:
+     alerte_coul:
+      value_template: >-
+          {% if is_state("sensor.40_weather_alert", 'Vert') %}
+            56
+          {% elif is_state("sensor.40_weather_alert", 'Jaune') %}
+            57
+          {% elif is_state("sensor.40_weather_alert", 'Orange') %}
+            58
+          {% elif is_state("sensor.40_weather_alert", 'Rouge') %}
+            59
+          {% else %}
+            55
+          {% endif %}
+      friendly_name: Alerte Meteo France
+
+# ----------------------------------- Alertes gel neige orage ------------
+
+ - platform: template
+   sensors:
+     alerte_gel:
+      value_template: >-
+         {% set alert = states('sensor.capbreton_freeze_chance') | float  %}
+              {%- if alert > 10 -%}
+                1
+              {% else %}
+                0
+                {%- endif -%}
+
+ - platform: template
+   sensors:
+     alerte_neige:
+      value_template: >-
+         {% set alert = states('sensor.capbreton_snow_chance') | float  %}
+              {%- if alert > 10 -%}
+                1
+              {% else %}
+                0
+                {%- endif -%}
+
+ - platform: template
+   sensors:
+     alerte_orage:
+      value_template: >-
+         {% set alert = states('sensor.capbreton_thunder_chance') | float  %}
+              {%- if alert > 10 -%}
+                1
+              {% else %}
+                0
+                {%- endif -%}
+
+# ----------------------------------- BINARY SENSOR ----------------------------------------------------------------------------
+binary_sensor:
+
+# Presence pour eteidre l ecran - Merci à Paradis Artificiels -  simplifie avec juste la detection du portable sur le wifi
+  - platform: template
+    sensors:
+      somebody_home:
+        value_template: >-
+          {{ is_state('person.Axel', 'home')
+             or is_state('person.philipe', 'home')}}
+
+#------------------------------------------------------- switch ----------------------------------------------------------
+switch:
+
+  - platform: mqtt
+    name: "Prise 01"
+    state_topic: "/RFLink/cmd"
+    command_topic: "/RFLink/cmd"
+    qos: 0
+    payload_on: '10;NewKaku;021d531a;1;ON;'
+    payload_off: '10;NewKaku;021d531a;1;OFF;'
+    retain: true
+
+  - platform: mqtt
+    name: "Prise 02"
+    state_topic: "/RFLink/cmd"
+    command_topic: "/RFLink/cmd"
+    qos: 0
+    payload_on: '10;NewKaku;021d531a;2;ON;'
+    payload_off: '10;NewKaku;021d531a;2;OFF;'
+    retain: true
+
+  - platform: mqtt
+    name: "Prise 03"
+    state_topic: "/RFLink/cmd"
+    command_topic: "/RFLink/cmd"
+    qos: 0
+    payload_on: '10;NewKaku;021d531a;3;ON;'
+    payload_off: '10;NewKaku;021d531a;3;OFF;'
+    retain: true
+
+#------------------------------------------------------- light ----------------------------------------------------------
+light:
+
+

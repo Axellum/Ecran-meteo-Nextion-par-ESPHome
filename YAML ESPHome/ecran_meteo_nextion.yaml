@@ -1,0 +1,319 @@
+esphome:
+  name: meteo_esp32
+  platform: ESP32
+  board: nodemcu-32s
+
+wifi:
+  ssid: "Axel"
+  password: !secret wifi_password
+
+# Enable logging
+logger:
+  baud_rate: 0     # Disable UART logging (pins GPIO1/3 are used for Nextion communication)
+  level: VERBOSE
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+uart:
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+  baud_rate: 9600
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Paris
+
+globals:
+
+ - id: display_on             # Is display on?
+   type: bool
+ - id: glob_prise_01              # Global Plafonnier state
+   type: std::string
+ - id: glob_sonoff_100090a609             # Global Plafonnier state
+   type: std::string
+ - id: glob_prise_02              # Global Plafonnier state
+   type: std::string
+ - id: glob_prise_03              # Global Plafonnier state
+   type: std::string
+
+
+
+display:
+  - platform: nextion
+    id: teplomer
+    update_interval: 2s
+    lambda: |-
+             it.set_wait_for_ack(false);
+                auto time = id(sntp_time).now();
+                it.set_component_text_printf("heure","%02d",time.hour);
+                it.set_component_text_printf("minute","%02d",time.minute);
+                it.set_component_text_printf("date",id(date_simple).state.c_str());
+                it.send_command_printf("%s.pic=%.0f", "icon",id(today_icon).state);
+                it.send_command_printf("%s.pic=%.0f", "icon_jour",id(today_jour).state);
+                it.send_command_printf("%s.pic=%.0f", "icon_dem",id(today_icon1).state);
+                it.send_command_printf("%s.pic=%.0f", "Icon_2j",id(today_icon2).state);
+                it.send_command_printf("%s.pic=%.0f", "Icon_3j",id(today_icon3).state);
+                it.set_component_text_printf("T_min_jour","%.0f",id(jour_tmin).state);
+                it.set_component_text_printf("T_max_jour","%.0f",id(jour_tmax).state);
+                it.set_component_text_printf("T_min_dem","%.0f",id(dem_tmin).state);
+                it.set_component_text_printf("T_max_dem","%.0f",id(dem_tmax).state);
+                it.set_component_text_printf("T_min_j2","%.0f",id(j2_tmin).state);
+                it.set_component_text_printf("T_max_j2","%.0f",id(j2_tmax).state);
+                it.set_component_text_printf("T_min_j3","%.0f",id(j3_tmin).state);
+                it.set_component_text_printf("T_max_j3","%.0f",id(j3_tmax).state);
+                it.set_component_value("temp",id(temp_outside).state);
+                it.send_command_printf("lum_sal.val=%s", id(glob_prise_01).c_str());
+                it.send_command_printf("lum_ch.val=%s", id(glob_prise_02).c_str());
+                it.send_command_printf("lum2_ch.val=%s", id(glob_prise_03).c_str());
+                it.send_command_printf("vent_sal.val=%s", id(glob_sonoff_100090a609).c_str());
+                it.set_component_text_printf("hum",id(humi).state.c_str());
+                it.send_command_printf("%s.picc=%.0f","gel",id(alerte_gel).state);
+                it.send_command_printf("%s.picc=%.0f","neige",id(alerte_neige).state);
+                it.send_command_printf("%s.picc=%.0f","foudre",id(alerte_orage).state);
+
+#-------------------------- sensor ------------------------------------------------------------------------------------------
+sensor:
+  - platform: homeassistant
+    id: today_icon
+    entity_id: sensor.today_icon
+  - platform: homeassistant
+    id: today_jour
+    entity_id: sensor.jour
+  - platform: homeassistant
+    id: today_icon1
+    entity_id: sensor.today_icon1
+  - platform: homeassistant
+    id: today_icon2
+    entity_id: sensor.today_icon2
+  - platform: homeassistant
+    id: today_icon3
+    entity_id: sensor.today_icon3
+  - platform: homeassistant
+    id: jour_tmax    
+    entity_id: sensor.jour_tmax
+  - platform: homeassistant
+    id: jour_tmin
+    entity_id: sensor.jour_tmin
+  - platform: homeassistant
+    id: dem_tmax    
+    entity_id: sensor.dem_tmax
+  - platform: homeassistant
+    id: dem_tmin
+    entity_id: sensor.dem_tmin
+  - platform: homeassistant
+    id: j2_tmax
+    entity_id: sensor.j2_tmax
+  - platform: homeassistant
+    id: j2_tmin    
+    entity_id: sensor.j2_tmin  
+  - platform: homeassistant 
+    id: j3_tmax 
+    entity_id: sensor.j3_tmax
+  - platform: homeassistant
+    id: j3_tmin    
+    entity_id: sensor.j3_tmin 
+  - platform: homeassistant
+    id: temp_outside    
+    entity_id: sensor.sonde_blanche_temp
+#    accuracy_decimals: 0
+
+  - platform: homeassistant   # Outside temperature
+    id: alerte_gel    
+    entity_id:  sensor.alerte_gel
+
+  - platform: homeassistant   # Outside temperature
+    id: alerte_neige    
+    entity_id:  sensor.alerte_neige
+
+  - platform: homeassistant   # Outside temperature
+    id: alerte_orage    
+    entity_id:  sensor.alerte_orage
+
+#-------------------------- text_sensor ------------------------------------------------------------------------------------------
+text_sensor:
+  - platform: homeassistant
+    id: date_simple
+    entity_id: sensor.date_simple
+
+  - platform: homeassistant   # Outside temperature
+    id: humi    
+    entity_id: sensor.sonde_blanche_humi
+
+
+  - platform: homeassistant   # Plafonnier state
+    id: sonoff_100090a609_txt
+    entity_id: light.sonoff_100090a609
+    on_value:
+       then:
+         - if:
+            condition:
+              lambda: 'return (id(sonoff_100090a609_txt).state == "on");'
+            then:
+              - lambda: |-
+                          id(glob_sonoff_100090a609) = "1";
+                          id(teplomer).send_command_no_ack("vent_sal.val=1");
+            else:
+              - lambda: |-
+                          id(glob_sonoff_100090a609) = "0";
+                          id(teplomer).send_command_no_ack("vent_sal.val=0");
+
+  - platform: homeassistant   # Plafonnier state
+    id: sonoff_100090a609_2_txt
+    entity_id: light.sonoff_100090a609
+    on_value:
+       then:
+         - if:
+            condition:
+              lambda: 'return (id(sonoff_100090a609_txt).state == "on");'
+            then:
+              - lambda: |-
+                          id(glob_sonoff_100090a609) = "1";
+                          id(teplomer).send_command_no_ack("vent_sal.val=1");
+            else:
+              - lambda: |-
+                          id(glob_sonoff_100090a609) = "0";
+                          id(teplomer).send_command_no_ack("vent_sal.val=0");
+
+  - platform: homeassistant   # Plafonnier state
+    id: prise_01_txt
+    entity_id: switch.prise_01
+    on_value:
+       then:
+         - if:
+            condition:
+              lambda: 'return (id(prise_01_txt).state == "on");'
+            then:
+              - lambda: |-
+                          id(glob_prise_01) = "1";
+                          id(teplomer).send_command_no_ack("lum2_ch.val=1");
+            else:
+              - lambda: |-
+                          id(glob_prise_01) = "0";
+                          id(teplomer).send_command_no_ack("lum2_ch.val=0");
+
+  - platform: homeassistant   # Plafonnier state
+    id: prise_02_txt
+    entity_id: switch.prise_02
+    on_value:
+       then:
+         - if:
+            condition:
+              lambda: 'return (id(prise_02_txt).state == "on");'
+            then:
+              - lambda: |-
+                          id(glob_prise_02) = "1";
+                          id(teplomer).send_command_no_ack("lum_ch.val=1");
+            else:
+              - lambda: |-
+                          id(glob_prise_02) = "0";
+                          id(teplomer).send_command_no_ack("lum_ch.val=0");
+
+  - platform: homeassistant   # Plafonnier state
+    id: prise_03_txt
+    entity_id: switch.prise_03
+    on_value:
+       then:
+         - if:
+            condition:
+              lambda: 'return (id(prise_03_txt).state == "on");'
+            then:
+              - lambda: |-
+                          id(glob_prise_03) = "1";
+                          id(teplomer).send_command_no_ack("lum_sal.val=1");
+            else:
+              - lambda: |-
+                          id(glob_prise_03) = "0";
+                          id(teplomer).send_command_no_ack("lum_sal.val=0");
+
+#-------------------------- binary_sensor ------------------------------------------------------------------------------------------
+binary_sensor:
+
+  - platform: nextion
+    page_id: 0
+    component_id: 39
+    id: vent_sal
+    on_press:
+      then:
+        - homeassistant.service:
+            service: light.turn_on
+            data:
+              entity_id: light.sonoff_100090a609
+    on_release:
+      then:
+        - homeassistant.service:
+            service: light.turn_off
+            data:
+              entity_id: light.sonoff_100090a609
+
+  - platform: nextion
+    page_id: 0
+    component_id: 36
+    id: lum_sal
+    on_press:
+      then:
+        - homeassistant.service:
+            service: switch.turn_on
+            data:
+              entity_id: switch.prise_01
+    on_release:
+      then:
+        - homeassistant.service:
+            service: switch.turn_off
+            data:
+              entity_id: switch.prise_01
+
+  - platform: nextion
+    page_id: 0
+    component_id: 37
+    id: lum_ch
+    on_press:
+      then:
+        - homeassistant.service:
+            service: switch.turn_on
+            data:
+              entity_id: switch.prise_02
+    on_release:
+      then:
+        - homeassistant.service:
+            service: switch.turn_off
+            data:
+              entity_id: switch.prise_02
+
+  - platform: nextion
+    page_id: 0
+    component_id: 38
+    id: lum2_ch
+    on_press:
+      then:
+        - homeassistant.service:
+            service: switch.turn_on
+            data:
+              entity_id: switch.prise_03
+    on_release:
+      then:
+        - homeassistant.service:
+            service: switch.turn_off
+            data:
+              entity_id: switch.prise_03
+
+# no work
+  - platform: nextion
+    page_id: 0
+    component_id: 29
+    id: vent_sal2
+    on_press:
+      then:
+        - homeassistant.service:
+            service: light.turn_on
+            data:
+              entity_id: light.sonoff_100090a609
+    on_release:
+      then:
+        - homeassistant.service:
+            service: light.turn_off
+            data:
+              entity_id: light.sonoff_100090a609
