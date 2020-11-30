@@ -12,3 +12,4 @@ Vous trouverez sur ce git:
 - Le fichier configuration.yaml de Home assistant, à adapter aussi avec son integration Météo France et ses capteurs.
 - Le fichier script que j'utilise pour mes commandes, en guise d'exemples.
 
+Les icônes viennent de https://icon-icons.com/fr/pack/The-Weather-is-Nice-Today/1370, création de Laura Reen. J'ai parfois apporté de légère modifications.
