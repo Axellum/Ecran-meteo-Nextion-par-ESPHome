@@ -28,7 +28,8 @@ sonoff:
       device_class: light
     1000bd93cd:
       device_class: light
-
+  force_update: [current, power, voltage]
+  sensors: [power, current, voltage]
 # --------------- Partie sensor----------------------------------------------------------------
 sensor:
 
@@ -49,6 +50,7 @@ sensor:
         {{ days[now().weekday()] + ' ' + now().day | string + ' ' + months[now().month-1] }}
 
 #---------------------------Icone du jours meteo france -----------------
+#---- Faire un recherche / remplace de capbreton par votre ville sur l'integration meteo france
  - platform: template
    sensors:
      today_icon:
@@ -85,7 +87,11 @@ sensor:
             2
           {% endif %}
       friendly_name: meteo france
-
+#---------- Extraction de l'humiditee, peut etre remplace par un detecteur perso
+ - platform: template
+   sensors:
+      humi_ext:
+             value_template: "{{ state_attr('weather.capbreton', 'humidity') }}"
 #---------------------------Icone journée meteo france -----------------
  - platform: template
    sensors:
@@ -286,25 +292,6 @@ sensor:
              {% set j3_tmax = state_attr("weather.capbreton","forecast")[3].temperature | float %}
                 {{ j3_tmax }}
 
-# Alerte meteo
-
- - platform: template
-   sensors:
-     alerte_coul:
-      value_template: >-
-          {% if is_state("sensor.40_weather_alert", 'Vert') %}
-            56
-          {% elif is_state("sensor.40_weather_alert", 'Jaune') %}
-            57
-          {% elif is_state("sensor.40_weather_alert", 'Orange') %}
-            58
-          {% elif is_state("sensor.40_weather_alert", 'Rouge') %}
-            59
-          {% else %}
-            55
-          {% endif %}
-      friendly_name: Alerte Meteo France
-
 # ----------------------------------- Alertes gel neige orage ------------
 
  - platform: template
@@ -329,29 +316,38 @@ sensor:
                 0
                 {%- endif -%}
 
+#----------------Détecteur a adapter celon ses besoins, ici la détection d'un portable-----------------
  - platform: template
    sensors:
-     alerte_orage:
+     alerte_1:
       value_template: >-
-         {% set alert = states('sensor.capbreton_thunder_chance') | float  %}
-              {%- if alert > 10 -%}
-                1
-              {% else %}
-                0
-                {%- endif -%}
+          {% if is_state("device_tracker.galaxy_s6_edge", 'home') %}
+            1
+          {% else %}
+            0
+          {%- endif -%}
 
-# ----------------------------------- BINARY SENSOR ----------------------------------------------------------------------------
-binary_sensor:
+#--------Vigilence météo, vas nous servire a choisir l'icone et la couleur du texte via un champ cacher
+#----Remplacer 40 par votre département---------
+ - platform: template
+   sensors:
+     alerte_coul:
+      value_template: >-
+          {% if is_state("sensor.40_weather_alert", 'Vert') %}
+            35
+          {% elif is_state("sensor.40_weather_alert", 'Jaune') %}
+            36
+          {% elif is_state("sensor.40_weather_alert", 'Orange') %}
+            37
+          {% elif is_state("sensor.40_weather_alert", 'Rouge') %}
+            38
+          {% else %}
+            34
+          {% endif %}
+      friendly_name: Alerte Meteo France
 
-# Presence pour eteidre l ecran - Merci à Paradis Artificiels -  simplifie avec juste la detection du portable sur le wifi
-  - platform: template
-    sensors:
-      somebody_home:
-        value_template: >-
-          {{ is_state('person.Axel', 'home')
-             or is_state('person.philipe', 'home')}}
-
-#------------------------------------------------------- switch ----------------------------------------------------------
+#----------------------------------Les switch que j'utilise pour mes prises DIO en 433 et pour définir une couleur à l'allumage d'une ampoule RGB----
+#--Mis juste en exemple, reprenez simplement ceux que vous avez dans votre HA dans le yaml de l'esp---
 switch:
 
   - platform: mqtt
@@ -381,7 +377,13 @@ switch:
     payload_off: '10;NewKaku;021d531a;3;OFF;'
     retain: true
 
-#------------------------------------------------------- light ----------------------------------------------------------
-light:
-
-
+  - platform: template
+    switches:
+      cham_rgb:
+        friendly_name: "Chambre RGB"
+        value_template: "{{ is_state('light.ylbulbcolor1s_cec4', 'on') }}"
+        turn_on:
+          service: script.chamb_lum_blc
+        turn_off:
+          service: script.Chamb_lum_stop
+        icon_template: mdi:lightbulb
