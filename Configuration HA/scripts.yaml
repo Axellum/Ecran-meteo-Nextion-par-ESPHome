@@ -1,0 +1,38 @@
+# exemple de script que j'utilise pour une ampoule RGB
+# chamb_lum_rouge et chamb_lum_bleu sont appeler sur des icones des prevision du temps
+# chamb_lum_blc et chamb_lum_stop me sert à l'allumage de l'ampoule en blc
+  chamb_lum_rouge:
+    sequence: 
+      - service: light.turn_on
+        data:
+          entity_id: light.ylbulbcolor1s_cec4
+          brightness: 200
+          rgb_color: 
+            - "{{ 255 }}"
+            - "{{ 53 }}"
+            - "{{ 20 }}"
+  chamb_lum_bleu:
+    sequence: 
+      - service: light.turn_on
+        data:
+          entity_id: light.ylbulbcolor1s_cec4
+          brightness: 200
+          rgb_color: 
+            - "{{ 35 }}"
+            - "{{ 35 }}"
+            - "{{ 255 }}"
+  chamb_lum_blc:
+    sequence: 
+      - service: light.turn_on
+        data:
+          entity_id: light.ylbulbcolor1s_cec4
+          brightness: 255
+          rgb_color: 
+            - "{{ 255 }}"
+            - "{{ 200 }}"
+            - "{{ 145 }}"
+  chamb_lum_stop:
+    sequence: 
+      - service: light.turn_off
+        data:
+          entity_id: light.ylbulbcolor1s_cec4
