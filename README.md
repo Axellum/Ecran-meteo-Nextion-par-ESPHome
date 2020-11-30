@@ -15,7 +15,7 @@ Au menu:
 - Luminositée de l'écran réglable sur les icones "Journée" et "3 jours".
 - Apel de scripts pour changer de couleur sur une ampoule RGB sur les icones "Demain" et "2 jours".
 - Couleurs des températures des sondes en fonction de la valeur géré par l'écran.
-- Changement de couleur de texte et de l'icone de vigilence par l'ecran, via un champ cacher.
+- Changement de couleur de texte et de l'icone de vigilence par l'écran, via un champ cacher.
 
 Vous trouverez sur ce git:
 - Le fichier GIMP afin de pouvoir modifier l'esthétique, adapter les icones ex.
