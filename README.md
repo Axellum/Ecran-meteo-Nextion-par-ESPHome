@@ -1,5 +1,5 @@
 # Ecran météo Nextion par ESPHome
-Ecran météo pour Home Assistant: Utilisation de ESPHome, Météo France + commandes interrupteurs.
+Ecran météo pour Home Assistant: Utilisation de ESPHome, Météo France + divers commandes pour Home Assistant.
 
 ![](/20201123_122256.jpg)
 
@@ -14,7 +14,7 @@ Au menu:
 - 4 boutons pour gérer des intérupteurs, avec retour sur l'etat.
 - Luminositée de l'écran réglable sur les icones "Journée" et "3 jours".
 - Apel de scripts pour changer de couleur sur une ampoule RGB sur les icones "Demain" et "2 jours".
-- Couleurs des températures des sondes en fonction de la valeur géré par l'ecran.
+- Couleurs des températures des sondes en fonction de la valeur géré par l'écran.
 - Changement de couleur de texte et de l'icone de vigilence par l'ecran, via un champ cacher.
 
 Vous trouverez sur ce git:
