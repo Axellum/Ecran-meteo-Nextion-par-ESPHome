@@ -387,10 +387,3 @@ switch:
         turn_off:
           service: script.Chamb_lum_stop
         icon_template: mdi:lightbulb
-
-
-
-#------------------------------------------------------- light ----------------------------------------------------------
-light:
-
-
