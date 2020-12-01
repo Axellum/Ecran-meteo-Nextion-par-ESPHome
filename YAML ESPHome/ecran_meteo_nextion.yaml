@@ -220,7 +220,7 @@ binary_sensor:
 #--------Action à réaliser sur les boutons
   - platform: nextion
     page_id: 0
-    component_id: 36
+    component_id: 35
     id: lum_sal
     on_press:
       then:
@@ -236,7 +236,7 @@ binary_sensor:
               entity_id: switch.prise_01
   - platform: nextion
     page_id: 0
-    component_id: 37
+    component_id: 36
     id: lum_ch
     on_press:
       then:
@@ -252,7 +252,7 @@ binary_sensor:
               entity_id: switch.cham_rgb
   - platform: nextion
     page_id: 0
-    component_id: 38
+    component_id: 37
     id: lum2_ch
     on_press:
       then:
@@ -268,7 +268,7 @@ binary_sensor:
               entity_id: switch.prise_03
   - platform: nextion
     page_id: 0
-    component_id: 39
+    component_id: 38
     id: vent_sal
     on_press:
       then:
@@ -285,7 +285,7 @@ binary_sensor:
 #-------Script à appeler au toucher des icones du temps qu il fera Demain et 2 jours, pour moi changement de couleur de l'ampoule RGB. Sans retour de statut.
   - platform: nextion
     page_id: 0
-    component_id: 12
+    component_id: 11
     id: icon_dem
     on_press:
       then:
@@ -294,7 +294,7 @@ binary_sensor:
 
   - platform: nextion
     page_id: 0
-    component_id: 13
+    component_id: 12
     id: Icon_2j
     on_press:
       then:
