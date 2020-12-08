@@ -50,7 +50,8 @@ sensor:
         {{ days[now().weekday()] + ' ' + now().day | string + ' ' + months[now().month-1] }}
 
 #---------------------------Icone du jours meteo france -----------------
-#---- Faire un recherche / remplace de capbreton par votre ville sur l'integration meteo france
+
+# Icone du jours meteo france
  - platform: template
    sensors:
      today_icon:
@@ -87,12 +88,12 @@ sensor:
             2
           {% endif %}
       friendly_name: meteo france
-#---------- Extraction de l'humiditee, peut etre remplace par un detecteur perso
+
  - platform: template
    sensors:
       humi_ext:
              value_template: "{{ state_attr('weather.capbreton', 'humidity') }}"
-#---------------------------Icone journée meteo france -----------------
+#---------------------------Icone du demain meteo france -----------------
  - platform: template
    sensors:
      jour:
@@ -116,9 +117,9 @@ sensor:
           {% elif state_attr("weather.capbreton","forecast")[0].condition == 'partlycloudy' %}
             20
           {% elif state_attr("weather.capbreton","forecast")[0].condition == 'rainy' %}
-            28
-          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'pouring' %}
             26
+          {% elif state_attr("weather.capbreton","forecast")[0].condition == 'pouring' %}
+            27
           {% elif state_attr("weather.capbreton","forecast")[0].condition == 'snowy' %}
             29
           {% elif state_attr("weather.capbreton","forecast")[0].condition == 'snowy-rainy' %}
@@ -142,7 +143,8 @@ sensor:
              {% set dem_tmax = state_attr("weather.capbreton","forecast")[0].temperature | float %}
                 {{ dem_tmax }}
 
-#---------------------------Icone de demain meteo france -----------------
+# Icone des trois jours suivant, vérifié que les iconnes correspondent au temps qu il fait, et que tout les termes soit les bons.
+#---------------------------Icone du jour1 meteo france -----------------
  - platform: template
    sensors:
      today_icon1:
@@ -166,9 +168,9 @@ sensor:
           {% elif state_attr("weather.capbreton","forecast")[1].condition == 'partlycloudy' %}
             20
           {% elif state_attr("weather.capbreton","forecast")[1].condition == 'rainy' %}
-            28
-          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'pouring' %}
             26
+          {% elif state_attr("weather.capbreton","forecast")[1].condition == 'pouring' %}
+            27
           {% elif state_attr("weather.capbreton","forecast")[1].condition == 'snowy' %}
             29
           {% elif state_attr("weather.capbreton","forecast")[1].condition == 'snowy-rainy' %}
@@ -191,7 +193,6 @@ sensor:
         value_template: >-
              {% set dem_tmax = state_attr("weather.capbreton","forecast")[1].temperature | float %}
                 {{ dem_tmax }}
-
 #---------------------------Icone du jour2 meteo france -----------------
  - platform: template
    sensors:
@@ -216,9 +217,9 @@ sensor:
           {% elif state_attr("weather.capbreton","forecast")[2].condition == 'partlycloudy' %}
             20
           {% elif state_attr("weather.capbreton","forecast")[2].condition == 'rainy' %}
-            28
-          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'pouring' %}
             26
+          {% elif state_attr("weather.capbreton","forecast")[2].condition == 'pouring' %}
+            27
           {% elif state_attr("weather.capbreton","forecast")[2].condition == 'snowy' %}
             29
           {% elif state_attr("weather.capbreton","forecast")[2].condition == 'snowy-rainy' %}
@@ -241,7 +242,6 @@ sensor:
         value_template: >-
              {% set j2_tmax = state_attr("weather.capbreton","forecast")[2].temperature | float %}
                 {{ j2_tmax }}
-                
 #---------------------------Icone du jour3 meteo france -----------------
  - platform: template
    sensors:
@@ -266,9 +266,9 @@ sensor:
           {% elif state_attr("weather.capbreton","forecast")[3].condition == 'partlycloudy' %}
             20
           {% elif state_attr("weather.capbreton","forecast")[3].condition == 'rainy' %}
-            28
-          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'pouring' %}
             26
+          {% elif state_attr("weather.capbreton","forecast")[3].condition == 'pouring' %}
+            27
           {% elif state_attr("weather.capbreton","forecast")[3].condition == 'snowy' %}
             29
           {% elif state_attr("weather.capbreton","forecast")[3].condition == 'snowy-rainy' %}
