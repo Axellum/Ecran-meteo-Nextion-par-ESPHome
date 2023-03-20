@@ -1,6 +1,17 @@
 # Ecran météo Nextion par ESPHome
 Ecran météo pour Home Assistant: Utilisation de ESPHome, Météo France + divers commandes pour Home Assistant.
 
+Modifications en cour pour 2023:
+-3.5-
+- Remplacement des boutons du bas par la détection de la pluie sur une heure.
+- Ajout des alertes vigilence sur des icones
+- Simplification du code: que des sensors météo France
+- Modification de la taille du buffer (et rapiditée) pour l'envois de plus d'informations.
+- Ajout de pages pour la météo sur 10 jours? sur 10h00? Infos complémentaires?
+
+-10.1:
+- Passage du code sur un nextion 10.1
+
 ![](/20201123_122256.jpg)
 
 Version simplifié. En cour de construction.
