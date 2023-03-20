@@ -2,6 +2,7 @@
 Ecran météo pour Home Assistant: Utilisation de ESPHome, Météo France + divers commandes pour Home Assistant.
 
 Modifications en cour pour 2023:
+
 -3.5-
 - Remplacement des boutons du bas par la détection de la pluie sur une heure.
 - Ajout des alertes vigilence sur des icones
