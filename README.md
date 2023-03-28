@@ -1,5 +1,7 @@
 # Ecran météo Nextion par ESPHome
 Ecran météo pour Home Assistant: Utilisation de ESPHome, Météo France + divers commandes pour Home Assistant.
+**** Ca continu par là:
+https://github.com/Axellum/NextionWeather-Meteo-France
 
 Modifications en cour pour 2023:
 
